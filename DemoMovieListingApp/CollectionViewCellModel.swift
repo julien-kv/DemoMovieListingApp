@@ -7,13 +7,18 @@
 
 import Foundation
 
-struct MovieData:Decodable{
+struct MovieData:Codable{
     var page:MovieCell
     
     
 }
 
-struct MovieCell:Decodable{
+struct MovieCell:Codable{
+    var contentItems:contentItemStruct
+    var title:String
+    var totalContentItems:String
+    var pageSize:String
+    var pageNum:String
     
     enum CodingKeys: String, CodingKey{
         case contentItems="content-items"
@@ -22,62 +27,22 @@ struct MovieCell:Decodable{
         case pageSize="page-size"
         case pageNum="page-num"
     }
-    var contentItems:contentItemStruct
-    var title:String
-    var totalContentItems:String
-    var pageSize:String
-    var pageNum:String
-    
 }
 
-struct contentItemStruct:Decodable {
+struct contentItemStruct:Codable {
     var content:[SingleMovieCell]
     
 }
 
-struct SingleMovieCell:Decodable {
-   enum Codingkeys: String, CodingKey{
+struct SingleMovieCell:Codable {
+    let name: String
+    let img:String
+    
+    
+    enum Codingkeys: String, CodingKey{
         case name
-        case posterImage = "poster-image"
+        case img
+        
     }
-    //var posterImage:String
-    var name:String
-    
-    
     
 }
-//
-/// MARK: - Welcome
-//struct Welcome: Codable {
-//    let page: Page
-//}
-//
-//// MARK: - Page
-//struct Page: Codable {
-//    let title, totalContentItems, pageNum, pageSize: String
-//    let contentItems: ContentItems
-//
-//    enum CodingKeys: String, CodingKey {
-//        case title
-//        case totalContentItems = "total-content-items"
-//        case pageNum = "page-num"
-//        case pageSize = "page-size"
-//        case contentItems = "content-items"
-//    }
-//}
-//
-//// MARK: - ContentItems
-//struct ContentItems: Codable {
-//    let content: [Content]
-//}
-//
-//// MARK: - Content
-//struct Content: Codable {
-//    let name: Name
-//    let posterImage: PosterImage
-//
-//    enum CodingKeys: String, CodingKey {
-//        case name
-//        case posterImage = "poster-image"
-//    }
-//}

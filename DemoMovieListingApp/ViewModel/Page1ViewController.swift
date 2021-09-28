@@ -8,11 +8,8 @@
 import UIKit
 
 class Page1ViewController: UIViewController, UICollectionViewDelegate,UICollectionViewDataSource  {
-   
-    var movies:MovieData?
     
-    
-
+    var moviesArray=[SingleMovieCell]()
     @IBOutlet var MovieCollectionView: UICollectionView!
     
     override func viewDidLoad() {
@@ -23,92 +20,97 @@ class Page1ViewController: UIViewController, UICollectionViewDelegate,UICollecti
         MovieCollectionView.collectionViewLayout=UICollectionViewFlowLayout()
         
         MovieCollectionView.register(UINib(nibName: "MovieCollectionViewCell", bundle: nil), forCellWithReuseIdentifier: "reusablecell")
-       
+        self.readLocalJSONFile(forName: "CONTENTLISTINGPAGE-PAGE1")
         
-        //self.movies = self.getUsersList()
-            
-        
-        self.movies=self.readLocalJSONFile(forName: "CONTENTLISTINGPAGE-PAGE1")
-        self.MovieCollectionView.reloadData()
-        
-         
+        MovieCollectionView.register(UINib(nibName: "ActivityViewCell", bundle: nil), forCellWithReuseIdentifier: "activitycell")
     }
+    var currentPage:Int=1
+    var totalPage:Int=3
+    var pageNam:String="CONTENTLISTINGPAGE-PAGE"
+    
     func setNavBar(){
         let backButton = UIBarButtonItem()
         backButton.title = " Romantic Comedy"
-       backButton.tintColor=UIColor.white
+        self.navigationController?.navigationBar.topItem?.rightBarButtonItem=
+        backButton.tintColor=UIColor.white
         self.navigationController?.navigationBar.topItem?.backBarButtonItem = backButton
     }
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return movies?.page.contentItems.content.count ?? 0
+        return moviesArray.count
     }
-
+    
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell =  collectionView.dequeueReusableCell(withReuseIdentifier: "reusablecell", for: indexPath) as! MovieCollectionViewCell
-        cell.movieLabel.text=movies!.page.contentItems.content[indexPath.row].name
-        cell.movieImage.image=UIImage(named: "poster1")
+        
+        
+        if((indexPath.row==(moviesArray.count)-1) && currentPage<totalPage)
+        {
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "activitycell", for: indexPath)as!ActivityViewCell
+            cell.uiActivityCell.startAnimating()
+            return cell
+        }
+        else{
+            let cell =  collectionView.dequeueReusableCell(withReuseIdentifier: "reusablecell", for: indexPath) as! MovieCollectionViewCell
             
-        
-        
-        
-        return cell
+            cell.movieLabel.text=moviesArray[indexPath.row].name
+            
+            if let myImage = UIImage(named: moviesArray[indexPath.row].img) {
+              // use your image (myImage), it exists!
+                cell.movieImage.image=myImage
+            }
+            else{
+                cell.movieImage.image=UIImage(named: "placeholder_for_missing_posters")
+            }
+            
+           
+            return cell
+        }
     }
-
-
+    
+    
     //MARK:- loading data from local json
     
-//    func getUsersList() -> [MovieData]{
-//        guard let path = Bundle.main.path(forResource: "CONTENTLISTINGPAGE-PAGE1", ofType: "json") else { return [] }
-//        let url = URL(fileURLWithPath: path)
-//
-//        do{
-//            let data = try Data(contentsOf: url)
-//            //let json = try JSONSerialization.jsonObject(with: data, options: .mutableContainers)
-//            let json=try JSONDecoder().decode(MovieData].self, from: data)
-//
-//            print(json)
-//
-//            guard let array = json as? [MovieData] else {return []}
-//
-//            for i in array{
-//                print(i.page)
-//            }
-//            return array;
-//
-//        }catch{
-//            print(error)
-//            return []
-//        }
-//    }
-//
-    
-    func readLocalJSONFile(forName name: String) -> MovieData?{
+    func readLocalJSONFile(forName name: String){
         do {
             if let filePath = Bundle.main.path(forResource: name, ofType: "json") {
                 let fileUrl = URL(fileURLWithPath: filePath)
                 let data = try Data(contentsOf: fileUrl)
                 let decodedData = try JSONDecoder().decode(MovieData.self, from: data)
-                print(decodedData)
-                return decodedData
+                //print(decodedData)
+                //print(currentPage)
+                self.moviesArray.append(contentsOf: decodedData.page.contentItems.content)
+                MovieCollectionView.reloadData()
+            
+                
+                
             }
         } catch {
             print("error: \(error)")
         }
-        return nil
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        print(indexPath.row)
+       
+        if((indexPath.row==(moviesArray.count)-1) && currentPage<totalPage)
+        {
+            self.currentPage=currentPage+1
+            DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+                self.readLocalJSONFile(forName: self.pageNam+"\(self.currentPage)")
+                print("current page:",self.currentPage)
+            }
+        }
     }
     
 }
-
-
 
 extension Page1ViewController:UICollectionViewDelegateFlowLayout{
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         
-       let size=getItemSize(collectionView: collectionView, collectionViewLayout: collectionViewLayout)
+        let size=getItemSize(collectionView: collectionView, collectionViewLayout: collectionViewLayout)
         return CGSize(width: size, height: 250)
     }
-    
 }
+
 func getItemSize(collectionView:UICollectionView, collectionViewLayout:UICollectionViewLayout) -> Int {
     let nbCol = 3
     let flowLayout = collectionViewLayout as! UICollectionViewFlowLayout
@@ -118,3 +120,5 @@ func getItemSize(collectionView:UICollectionView, collectionViewLayout:UICollect
     let size = Int((collectionView.bounds.width - totalSpace) / CGFloat(nbCol))
     return size
 }
+
+
