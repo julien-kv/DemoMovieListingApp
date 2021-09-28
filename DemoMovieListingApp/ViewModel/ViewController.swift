@@ -45,6 +45,11 @@ class ViewController: UIViewController {
     }
     override func viewDidLoad() {
         super.viewDidLoad()
+        FirstButton.layer.shadowColor = UIColor.white.cgColor
+        FirstButton.layer.shadowOpacity = 0.4
+        FirstButton.layer.shadowOffset = .zero
+        FirstButton.layer.shadowRadius = 2
+        
         self.navigationController?.navigationBar.titleTextAttributes=[NSAttributedString.Key.foregroundColor: UIColor.white]
         
         // Do any additional setup after loading the view.
