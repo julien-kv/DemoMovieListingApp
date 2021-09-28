@@ -12,8 +12,10 @@ class Page1ViewController: UIViewController, UICollectionViewDelegate,UICollecti
     var moviesArray=[SingleMovieCell]()
     @IBOutlet var MovieCollectionView: UICollectionView!
     
+    @IBOutlet var myCollectionVIew: UICollectionView!
     override func viewDidLoad() {
         super.viewDidLoad()
+        myCollectionVIew.layer.backgroundColor=UIColor.black.cgColor
         setNavBar()
         MovieCollectionView.delegate=self
         MovieCollectionView.dataSource=self
@@ -31,7 +33,6 @@ class Page1ViewController: UIViewController, UICollectionViewDelegate,UICollecti
     func setNavBar(){
         let backButton = UIBarButtonItem()
         backButton.title = " Romantic Comedy"
-        self.navigationController?.navigationBar.topItem?.rightBarButtonItem=
         backButton.tintColor=UIColor.white
         self.navigationController?.navigationBar.topItem?.backBarButtonItem = backButton
     }

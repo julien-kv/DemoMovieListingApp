@@ -52,6 +52,7 @@
                     </view>
                     <connections>
                         <outlet property="MovieCollectionView" destination="yCM-Ae-WoF" id="vul-12-tAs"/>
+                        <outlet property="myCollectionVIew" destination="yCM-Ae-WoF" id="JB9-fa-Zkl"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Ief-a0-LHa" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
